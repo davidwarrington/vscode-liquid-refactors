@@ -1,19 +1,27 @@
-import { commands, type ExtensionContext } from 'vscode';
-import { name as extensionName } from '../package.json';
+import {
+  commands,
+  languages,
+  type CodeActionProvider,
+  type ExtensionContext,
+} from 'vscode';
 import { extractToLocales } from './commands/extract-to-locales';
-
-type Commands = typeof commands;
-type RegisterTextEditorCommandArgs = Parameters<
-  Commands['registerTextEditorCommand']
->;
+import { LiquidCodeActionProvider } from './providers/liquid-code-action-provider';
+import { Command } from './types';
 
 function registerSubscription(context: ExtensionContext) {
   return {
-    textEditorCommand(...[name, ...args]: RegisterTextEditorCommandArgs) {
-      const commandName = `${extensionName}.${name}`;
+    codeActionsProvider(provider: CodeActionProvider) {
+      const disposable = languages.registerCodeActionsProvider(
+        'liquid',
+        provider,
+      );
+
+      context.subscriptions.push(disposable);
+    },
+    textEditorCommand(command: Command) {
       const disposable = commands.registerTextEditorCommand(
-        commandName,
-        ...args,
+        command.meta.name,
+        command,
       );
 
       context.subscriptions.push(disposable);
@@ -24,7 +32,8 @@ function registerSubscription(context: ExtensionContext) {
 export function activate(context: ExtensionContext) {
   const subscribe = registerSubscription(context);
 
-  subscribe.textEditorCommand('extractToLocales', extractToLocales);
+  subscribe.codeActionsProvider(new LiquidCodeActionProvider());
+  subscribe.textEditorCommand(extractToLocales);
 }
 
 export function deactivate() {}

@@ -6,6 +6,8 @@ import {
   type TextEditor,
   type Uri,
 } from 'vscode';
+import { Command } from '../types';
+import { getCommandId } from '../utils/get-command-id';
 
 interface Locale {
   [key: string]: Locale | string;
@@ -88,33 +90,40 @@ function translate(key: string) {
   return `{{ ${wrap(quote)(key)} | t }}`;
 }
 
-export async function extractToLocales(
-  editor: TextEditor,
-): Promise<Disposable | void> {
-  if (editor.selection.isEmpty) {
-    throw new Error('Cannot refactor empty string.');
-  }
+export const extractToLocales: Command = Object.assign(
+  async function extractToLocales(
+    editor: TextEditor,
+  ): Promise<Disposable | void> {
+    if (editor.selection.isEmpty) {
+      throw new Error('Cannot refactor empty string.');
+    }
 
-  const { data, uri: localeFile } = await getDefaultLocaleFile();
-  const highlightedText = editor.document.getText(editor.selection);
+    const { data, uri: localeFile } = await getDefaultLocaleFile();
+    const highlightedText = editor.document.getText(editor.selection);
 
-  const key = await window.showInputBox({
-    /** @todo replace with highlighted text */
-    placeHolder: 'key.for.locale',
-  });
+    const key = await window.showInputBox({
+      /** @todo replace with highlighted text */
+      placeHolder: 'key.for.locale',
+    });
 
-  const isCancelled = key === undefined;
+    const isCancelled = key === undefined;
 
-  if (isCancelled) {
-    console.log('Cancelled');
-    return;
-  }
+    if (isCancelled) {
+      console.log('Cancelled');
+      return;
+    }
 
-  const newLocales = injectLocale(key, highlightedText, data);
+    const newLocales = injectLocale(key, highlightedText, data);
 
-  await editor.edit(async edit => {
-    edit.replace(editor.selection, translate(key));
-    /** @todo maintain existing formatting */
-    await writeJson(localeFile, newLocales, workspace.fs);
-  });
-}
+    await editor.edit(async edit => {
+      edit.replace(editor.selection, translate(key));
+      /** @todo maintain existing formatting */
+      await writeJson(localeFile, newLocales, workspace.fs);
+    });
+  },
+  {
+    meta: {
+      name: getCommandId('extractToLocales'),
+    },
+  },
+);
