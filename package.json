@@ -1,0 +1,46 @@
+{
+  "name": "vscode-liquid-refactors",
+  "displayName": "Liquid Refactors",
+  "version": "0.0.0",
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "categories": [
+    "Other"
+  ],
+  "private": true,
+  "main": "./dist/index.cjs",
+  "type": "module",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "activationEvents": [],
+  "contributes": {
+    "commands": [
+      {
+        "command": "vscode-liquid-refactors.extractToLocales",
+        "category": "Liquid",
+        "title": "Extract to locales"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "format": "prettier --write .",
+    "lint": "eslint .",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@davidwarrington/eslint-config": "^2.2.0",
+    "@davidwarrington/prettier-config": "^2.1.5",
+    "@types/node": "^22.10.5",
+    "@types/vscode": "^1.96.0",
+    "eslint": "^9.17.0",
+    "prettier": "^3.4.2",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
