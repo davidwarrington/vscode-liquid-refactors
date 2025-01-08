@@ -1,15 +1,16 @@
 import {
-  type CodeAction,
-  type CodeActionProvider,
-  type Command,
-  type DocumentSelector,
-  type ProviderResult,
   window,
+  type CodeAction,
+  type Command,
+  type ProviderResult,
 } from 'vscode';
 import { extractToLocales } from '../commands/extract-to-locales';
+import { CodeActionProvider } from '../types';
 
 export class LiquidCodeActionProvider implements CodeActionProvider {
-  static selector: DocumentSelector = 'liquid';
+  get selector() {
+    return 'liquid';
+  }
 
   provideCodeActions(): ProviderResult<(CodeAction | Command)[]> {
     const editor = window.activeTextEditor;

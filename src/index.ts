@@ -1,18 +1,13 @@
-import {
-  commands,
-  languages,
-  type CodeActionProvider,
-  type ExtensionContext,
-} from 'vscode';
+import { commands, languages, type ExtensionContext } from 'vscode';
 import { extractToLocales } from './commands/extract-to-locales';
 import { LiquidCodeActionProvider } from './providers/liquid-code-action-provider';
-import { Command } from './types';
+import type { CodeActionProvider, Command } from './types';
 
 function registerSubscription(context: ExtensionContext) {
   return {
     codeActionsProvider(provider: CodeActionProvider) {
       const disposable = languages.registerCodeActionsProvider(
-        'liquid',
+        provider.selector,
         provider,
       );
 

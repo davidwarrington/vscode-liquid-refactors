@@ -1,14 +1,15 @@
-import type { commands } from 'vscode';
+import type * as vscode from 'vscode';
 
 type TextEditorCommand = Parameters<
-  typeof commands.registerTextEditorCommand
+  typeof vscode.commands.registerTextEditorCommand
 >[1];
-type TextEditorCommandArgs = Parameters<TextEditorCommand>;
-type TextEditorCommandReturnType = ReturnType<TextEditorCommand>;
 
-export interface Command {
-  (...args: TextEditorCommandArgs): TextEditorCommandReturnType;
+export interface Command extends TextEditorCommand {
   meta: {
     name: string;
   };
+}
+
+export interface CodeActionProvider extends vscode.CodeActionProvider {
+  selector: vscode.DocumentSelector;
 }
