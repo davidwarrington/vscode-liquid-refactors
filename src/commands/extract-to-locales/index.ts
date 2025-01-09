@@ -6,8 +6,12 @@ import {
   type TextEditor,
   type Uri,
 } from 'vscode';
-import { Command } from '../types';
-import { getCommandId } from '../utils/get-command-id';
+import { Command } from '../../types';
+import { getCommandId } from '../../utils/get-command-id';
+import {
+  extractVariablesFromSelection,
+  type LocaleVariableMatch,
+} from './extract-variables-from-selection';
 
 interface Locale {
   [key: string]: Locale | string;
@@ -52,10 +56,23 @@ async function getDefaultLocaleFile() {
   };
 }
 
-function injectLocale(key: string, value: string, base: Locale): Locale {
+function buildTranslateFilter(variables: LocaleVariableMatch[]) {
+  if (variables.length === 0) {
+    return 't';
+  }
+
+  return `t: ${variables.map(({ variableName, variableValue }) => `${variableName}: ${variableValue}`).join(', ')}`;
+}
+
+function injectLocale(
+  key: string,
+  value: string,
+  base: Locale,
+  variables: LocaleVariableMatch[],
+): Locale {
   const [firstKey, ...remainingKeys] = key.split('.');
 
-  if (firstKey in base) {
+  if (firstKey in base && remainingKeys.length === 0) {
     throw new Error('Key already exists');
   }
 
@@ -69,11 +86,16 @@ function injectLocale(key: string, value: string, base: Locale): Locale {
   if (remainingKeys.length > 0) {
     return {
       ...base,
-      [firstKey]: injectLocale(remainingKeys.join('.'), value, nextObject),
+      [firstKey]: injectLocale(
+        remainingKeys.join('.'),
+        value,
+        nextObject,
+        variables,
+      ),
     };
   }
 
-  base[key] = value;
+  base[key] = replaceVariablesInSelection(value, variables);
 
   return base;
 }
@@ -84,10 +106,18 @@ function wrap(prefix: string, suffix = prefix) {
   };
 }
 
-function translate(key: string) {
+function replaceVariablesInSelection(
+  selection: string,
+  variables: LocaleVariableMatch[],
+) {
+  return variables.reduce((accumulator, { match, replacement }) => {
+    return accumulator.replace(match, replacement);
+  }, selection);
+}
+
+function translate(key: string, variables: LocaleVariableMatch[]) {
   const quote = key.includes(`'`) ? `"` : `'`;
-  /** @todo add variables */
-  return `{{ ${wrap(quote)(key)} | t }}`;
+  return `{{ ${wrap(quote)(key)} | ${buildTranslateFilter(variables)} }}`;
 }
 
 export const extractToLocales: Command = Object.assign(
@@ -113,10 +143,12 @@ export const extractToLocales: Command = Object.assign(
       return;
     }
 
-    const newLocales = injectLocale(key, highlightedText, data);
+    /** @todo raise errors */
+    const variables = extractVariablesFromSelection(highlightedText);
+    const newLocales = injectLocale(key, highlightedText, data, variables);
 
     await editor.edit(async edit => {
-      edit.replace(editor.selection, translate(key));
+      edit.replace(editor.selection, translate(key, variables));
       /** @todo maintain existing formatting */
       await writeJson(localeFile, newLocales, workspace.fs);
     });
