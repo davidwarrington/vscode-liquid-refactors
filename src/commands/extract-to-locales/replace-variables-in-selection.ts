@@ -4,26 +4,13 @@ export function replaceVariablesInSelection(
   selection: string,
   variables: LocaleVariableMatch[],
 ) {
-  const variablesInSelection = [
-    ...selection.matchAll(/{{-?\s*(?:.+?)\s*-?}}/gs),
-  ].reverse();
-  const variableSet = new Set(variables.reverse());
+  const reversedVariables = variables.toReversed();
 
-  return variablesInSelection.reduce((modifiedSelection, match) => {
-    const variable = [...variableSet].find(
-      variable => variable.match === match[0],
-    );
-
-    if (!variable) {
-      return modifiedSelection;
-    }
-
-    variableSet.delete(variable);
-
-    const lastIndex = match.index;
+  return reversedVariables.reduce((modifiedSelection, variable) => {
+    const lastIndex = variable.index;
 
     const start = modifiedSelection.slice(0, lastIndex);
-    const end = modifiedSelection.slice(match[0].length + lastIndex);
+    const end = modifiedSelection.slice(variable.match.length + lastIndex);
 
     return `${start}${variable.replacement}${end}`;
   }, selection);

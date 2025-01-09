@@ -16,6 +16,7 @@ describe(extractVariablesFromSelection, () => {
     const input = 'Foo {{ bar }}';
     const expected: LocaleVariableMatch[] = [
       {
+        index: 4,
         match: '{{ bar }}',
         replacement: '{{ bar }}',
         variableName: 'bar',
@@ -30,6 +31,7 @@ describe(extractVariablesFromSelection, () => {
     const input = 'Foo {{bar}}';
     const expected: LocaleVariableMatch[] = [
       {
+        index: 4,
         match: '{{bar}}',
         replacement: '{{ bar }}',
         variableName: 'bar',
@@ -44,6 +46,7 @@ describe(extractVariablesFromSelection, () => {
     const input = 'Foo {{bar}}';
     const expected: LocaleVariableMatch[] = [
       {
+        index: 4,
         match: '{{bar}}',
         replacement: '{{ bar }}',
         variableName: 'bar',
@@ -58,6 +61,7 @@ describe(extractVariablesFromSelection, () => {
     const input = 'Foo {{- bar -}}';
     const expected: LocaleVariableMatch[] = [
       {
+        index: 4,
         match: '{{- bar -}}',
         replacement: '{{ bar }}',
         variableName: 'bar',
@@ -72,6 +76,7 @@ describe(extractVariablesFromSelection, () => {
     const input = 'Foo {{ bar_baz }}';
     const expected: LocaleVariableMatch[] = [
       {
+        index: 4,
         match: '{{ bar_baz }}',
         replacement: '{{ bar_baz }}',
         variableName: 'bar_baz',
@@ -86,6 +91,7 @@ describe(extractVariablesFromSelection, () => {
     const input = 'Foo {{ bar-baz }}';
     const expected: LocaleVariableMatch[] = [
       {
+        index: 4,
         match: '{{ bar-baz }}',
         replacement: '{{ bar-baz }}',
         variableName: 'bar-baz',
@@ -100,6 +106,7 @@ describe(extractVariablesFromSelection, () => {
     const input = 'Foo {{ bar.baz }}';
     const expected: LocaleVariableMatch[] = [
       {
+        index: 4,
         match: '{{ bar.baz }}',
         replacement: '{{ baz }}',
         variableName: 'baz',
@@ -111,10 +118,11 @@ describe(extractVariablesFromSelection, () => {
   });
 
   /** @todo confirm if translation variables can have question marks */
-  it('supports question marks in an variable', () => {
+  it('supports question marks in a variable', () => {
     const input = 'Foo {{ bar? }}';
     const expected: LocaleVariableMatch[] = [
       {
+        index: 4,
         match: '{{ bar? }}',
         replacement: '{{ bar? }}',
         variableName: 'bar?',
@@ -125,10 +133,11 @@ describe(extractVariablesFromSelection, () => {
     expect(extractVariablesFromSelection(input)).toStrictEqual(expected);
   });
 
-  it('supports square brackets in an variable', () => {
+  it('supports square brackets in a variable', () => {
     const input = "Foo {{ bar['baz'] }}";
     const expected: LocaleVariableMatch[] = [
       {
+        index: 4,
         match: `{{ bar['baz'] }}`,
         replacement: '{{ baz }}',
         variableName: `baz`,
@@ -139,10 +148,11 @@ describe(extractVariablesFromSelection, () => {
     expect(extractVariablesFromSelection(input)).toStrictEqual(expected);
   });
 
-  it('supports spaces in square brackets in an variable', () => {
+  it('supports spaces in square brackets in a variable', () => {
     const input = "{{ foo['bar baz'] }}";
     const expected: LocaleVariableMatch[] = [
       {
+        index: 0,
         match: `{{ foo['bar baz'] }}`,
         replacement: '{{ bar_baz }}',
         variableName: `bar_baz`,
@@ -161,6 +171,7 @@ describe(extractVariablesFromSelection, () => {
     }}`;
     const expected: LocaleVariableMatch[] = [
       {
+        index: 4,
         match: `{{
       bar
         .baz
@@ -179,12 +190,14 @@ describe(extractVariablesFromSelection, () => {
     const input = 'Foo {{ bar }} {{ baz }}';
     const expected: LocaleVariableMatch[] = [
       {
+        index: 4,
         match: '{{ bar }}',
         replacement: '{{ bar }}',
         variableName: 'bar',
         variableValue: 'bar',
       },
       {
+        index: 14,
         match: '{{ baz }}',
         replacement: '{{ baz }}',
         variableName: 'baz',
@@ -199,12 +212,14 @@ describe(extractVariablesFromSelection, () => {
     const input = 'Foo {{ bar }} {{ bar }}';
     const expected: LocaleVariableMatch[] = [
       {
+        index: 4,
         match: '{{ bar }}',
         replacement: '{{ bar }}',
         variableName: 'bar',
         variableValue: 'bar',
       },
       {
+        index: 14,
         match: '{{ bar }}',
         replacement: '{{ bar_1 }}',
         variableName: 'bar_1',
@@ -219,18 +234,21 @@ describe(extractVariablesFromSelection, () => {
     const input = 'Foo {{ bar }} {{ bar }} {{ bar_1 }}';
     const expected: LocaleVariableMatch[] = [
       {
+        index: 4,
         match: '{{ bar }}',
         replacement: '{{ bar }}',
         variableName: 'bar',
         variableValue: 'bar',
       },
       {
+        index: 14,
         match: '{{ bar }}',
         replacement: '{{ bar_2 }}',
         variableName: 'bar_2',
         variableValue: 'bar',
       },
       {
+        index: 24,
         match: '{{ bar_1 }}',
         replacement: '{{ bar_1 }}',
         variableName: 'bar_1',

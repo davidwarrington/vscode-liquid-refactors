@@ -8,6 +8,7 @@ function normaliseValue(value: string) {
 }
 
 export interface LocaleVariableMatch {
+  index: number;
   match: string;
   replacement: string;
   variableName: string;
@@ -18,14 +19,14 @@ export function extractVariablesFromSelection(
   selection: string,
 ): LocaleVariableMatch[] {
   const regexp = /{{-?(?:\s*)([a-zA-Z0-9_\-\s[\]'".?]*)(?:\s*)-?}}/gs;
-  const matches = selection.match(regexp);
+  const matches = selection.matchAll(regexp);
 
   if (!matches) {
     return [];
   }
 
-  const extractedVariables = matches
-    .map(match => {
+  const extractedVariables = [...matches]
+    .map(({ 0: match, index }) => {
       const value = normaliseValue(
         match.replaceAll(/(^{{-?\s*)|(\s*-?}}$)/g, ''),
       );
@@ -47,6 +48,7 @@ export function extractVariablesFromSelection(
       }
 
       return {
+        index,
         match,
         replacement: `{{ ${variableName} }}`,
         variableName,
