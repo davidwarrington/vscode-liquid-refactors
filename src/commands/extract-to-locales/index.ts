@@ -12,6 +12,7 @@ import {
   extractVariablesFromSelection,
   type LocaleVariableMatch,
 } from './extract-variables-from-selection';
+import { replaceVariablesInSelection } from './replace-variables-in-selection';
 
 interface Locale {
   [key: string]: Locale | string;
@@ -104,15 +105,6 @@ function wrap(prefix: string, suffix = prefix) {
   return function (string: string) {
     return `${prefix}${string}${suffix}`;
   };
-}
-
-function replaceVariablesInSelection(
-  selection: string,
-  variables: LocaleVariableMatch[],
-) {
-  return variables.reduce((accumulator, { match, replacement }) => {
-    return accumulator.replace(match, replacement);
-  }, selection);
 }
 
 function translate(key: string, variables: LocaleVariableMatch[]) {
