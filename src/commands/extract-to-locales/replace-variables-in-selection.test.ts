@@ -6,7 +6,7 @@ type ReplaceVariablesInSelectionArgs = Parameters<
 >;
 
 describe(replaceVariablesInSelection, () => {
-  it('Foo {{ bar }} => Foo {{ bar }}', () => {
+  it('supports basic selections', () => {
     const input = [
       'Foo {{ bar }}',
       [
@@ -24,7 +24,7 @@ describe(replaceVariablesInSelection, () => {
     expect(replaceVariablesInSelection(...input)).toBe(output);
   });
 
-  it('Foo {{ bar }} {{ bar }} => Foo {{ bar }} {{ bar_1 }}', () => {
+  it('replaces duplicate variables in the correct order', () => {
     const input = [
       'Foo {{ bar }} {{ bar }}',
       [
