@@ -88,37 +88,44 @@ export const extractToLocales: Command = Object.assign(
   async function extractToLocales(
     editor: TextEditor,
   ): Promise<Disposable | void> {
-    if (editor.selection.isEmpty) {
-      throw new Error('Cannot refactor empty string.');
+    try {
+      if (editor.selection.isEmpty) {
+        throw new Error('Cannot refactor empty string.');
+      }
+
+      const {
+        data,
+        string: localeString,
+        uri: localeFile,
+      } = await getDefaultLocaleFile();
+      const highlightedText = editor.document.getText(editor.selection);
+
+      const key = await window.showInputBox({
+        /** @todo replace with highlighted text */
+        placeHolder: 'key.for.locale',
+      });
+
+      const isCancelled = key === undefined;
+
+      if (isCancelled) {
+        console.log('Cancelled');
+        return;
+      }
+
+      const variables = extractVariablesFromSelection(highlightedText);
+      const newLocales = injectLocale(key, highlightedText, data, variables);
+
+      await editor.edit(async edit => {
+        edit.replace(editor.selection, translate(key, variables));
+        await writeJsonc(localeFile, localeString, newLocales, workspace.fs);
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        window.showErrorMessage(error.message);
+      }
+
+      throw error;
     }
-
-    const {
-      data,
-      string: localeString,
-      uri: localeFile,
-    } = await getDefaultLocaleFile();
-    const highlightedText = editor.document.getText(editor.selection);
-
-    const key = await window.showInputBox({
-      /** @todo replace with highlighted text */
-      placeHolder: 'key.for.locale',
-    });
-
-    const isCancelled = key === undefined;
-
-    if (isCancelled) {
-      console.log('Cancelled');
-      return;
-    }
-
-    /** @todo raise errors */
-    const variables = extractVariablesFromSelection(highlightedText);
-    const newLocales = injectLocale(key, highlightedText, data, variables);
-
-    await editor.edit(async edit => {
-      edit.replace(editor.selection, translate(key, variables));
-      await writeJsonc(localeFile, localeString, newLocales, workspace.fs);
-    });
   },
   {
     meta: {
