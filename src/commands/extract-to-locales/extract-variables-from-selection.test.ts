@@ -93,8 +93,8 @@ describe(extractVariablesFromSelection, () => {
       {
         index: 4,
         match: '{{ bar-baz }}',
-        replacement: '{{ bar-baz }}',
-        variableName: 'bar-baz',
+        replacement: '{{ bar_baz }}',
+        variableName: 'bar_baz',
         variableValue: 'bar-baz',
       },
     ];
@@ -117,15 +117,14 @@ describe(extractVariablesFromSelection, () => {
     expect(extractVariablesFromSelection(input)).toStrictEqual(expected);
   });
 
-  /** @todo confirm if translation variables can have question marks */
   it('supports question marks in a variable', () => {
     const input = 'Foo {{ bar? }}';
     const expected: LocaleVariableMatch[] = [
       {
         index: 4,
         match: '{{ bar? }}',
-        replacement: '{{ bar? }}',
-        variableName: 'bar?',
+        replacement: '{{ bar }}',
+        variableName: 'bar',
         variableValue: 'bar?',
       },
     ];

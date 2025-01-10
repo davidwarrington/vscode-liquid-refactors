@@ -47,6 +47,12 @@ export function extractVariablesFromSelection(
         return;
       }
 
+      variableName = variableName
+        .replaceAll('-', '_')
+        .normalize('NFD')
+        .replaceAll(/[\u0300-\u036F]/g, '')
+        .replaceAll(/[^_a-zA-Z0-9]/g, '');
+
       return {
         index,
         match,
