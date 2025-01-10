@@ -11,6 +11,9 @@ importers:
       lodash.snakecase:
         specifier: ^4.1.1
         version: 4.1.1
+      silver-fleece:
+        specifier: ^1.2.1
+        version: 1.2.1
     devDependencies:
       '@davidwarrington/eslint-config':
         specifier: ^2.2.0
@@ -1320,6 +1323,9 @@ packages:
   signal-exit@4.1.0:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
+
+  silver-fleece@1.2.1:
+    resolution: {integrity: sha512-GwiBh7LzX4aKWb3LH1tPu8et2zZqe1cwXn+/uwIUK+H1Y2k119qpvPelVdRKG/6+RQvtUdRep4mBOOVf80VYDA==}
 
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
@@ -2710,6 +2716,8 @@ snapshots:
   siginfo@2.0.0: {}
 
   signal-exit@4.1.0: {}
+
+  silver-fleece@1.2.1: {}
 
   source-map-js@1.2.1: {}
 

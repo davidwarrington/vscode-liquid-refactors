@@ -1,12 +1,6 @@
-import {
-  window,
-  workspace,
-  type Disposable,
-  type FileSystem,
-  type TextEditor,
-  type Uri,
-} from 'vscode';
+import { window, workspace, type Disposable, type TextEditor } from 'vscode';
 import { Command } from '../../types';
+import { readJsonc, writeJsonc } from '../../utils/file-system';
 import { getCommandId } from '../../utils/get-command-id';
 import {
   extractVariablesFromSelection,
@@ -18,28 +12,6 @@ interface Locale {
   [key: string]: Locale | string;
 }
 
-async function writeFile(file: Uri, content: string, fs: FileSystem) {
-  const buffer = Buffer.from(content);
-
-  return fs.writeFile(file, buffer);
-}
-
-async function writeJson(file: Uri, content: unknown, fs: FileSystem) {
-  return writeFile(file, JSON.stringify(content, undefined, 2), fs);
-}
-
-async function readFile(file: Uri, fs: FileSystem) {
-  const buffer = await fs.readFile(file);
-
-  return buffer.toString();
-}
-
-async function readJson<T = unknown>(...args: Parameters<typeof readFile>) {
-  const content = await readFile(...args);
-
-  return JSON.parse(content) as T;
-}
-
 async function getDefaultLocaleFile() {
   const files = await workspace.findFiles('**/locales/*.default.json');
   const uri = files.at(0);
@@ -48,11 +20,11 @@ async function getDefaultLocaleFile() {
     throw new Error('Cannot find default locale file');
   }
 
-  /** @todo parse as json5, currently assuming locale file is valid json */
-  const data = await readJson<Locale>(uri, workspace.fs);
+  const { content, data } = await readJsonc(uri, workspace.fs);
 
   return {
     data,
+    string: content,
     uri,
   };
 }
@@ -120,7 +92,11 @@ export const extractToLocales: Command = Object.assign(
       throw new Error('Cannot refactor empty string.');
     }
 
-    const { data, uri: localeFile } = await getDefaultLocaleFile();
+    const {
+      data,
+      string: localeString,
+      uri: localeFile,
+    } = await getDefaultLocaleFile();
     const highlightedText = editor.document.getText(editor.selection);
 
     const key = await window.showInputBox({
@@ -141,8 +117,7 @@ export const extractToLocales: Command = Object.assign(
 
     await editor.edit(async edit => {
       edit.replace(editor.selection, translate(key, variables));
-      /** @todo maintain existing formatting */
-      await writeJson(localeFile, newLocales, workspace.fs);
+      await writeJsonc(localeFile, localeString, newLocales, workspace.fs);
     });
   },
   {
