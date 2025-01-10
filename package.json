@@ -24,7 +24,15 @@
         "category": "Liquid",
         "title": "Extract to locales"
       }
-    ]
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "vscode-liquid-refactors.extractToLocales",
+          "when": "editorLangId === 'liquid'"
+        }
+      ]
+    }
   },
   "scripts": {
     "build": "tsup",
