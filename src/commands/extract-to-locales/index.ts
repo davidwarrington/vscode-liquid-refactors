@@ -112,6 +112,10 @@ export const extractToLocales: Command = Object.assign(
         return;
       }
 
+      if (key === '') {
+        throw new Error('Key must not be blank');
+      }
+
       const variables = extractVariablesFromSelection(highlightedText);
       const newLocales = injectLocale(key, highlightedText, data, variables);
 
