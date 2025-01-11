@@ -3,7 +3,7 @@ import { patch } from 'silver-fleece';
 import { Range, window, type TextEditor } from 'vscode';
 import { Command } from '../../types';
 import { getCommandId } from '../../utils/get-command-id';
-import { getSchema, type MatchedSchema } from './get-schema';
+import { getSchema, type MatchedSchema } from '../../utils/get-schema';
 
 function injectSchemaSetting(
   schema: MatchedSchema,

@@ -7,7 +7,25 @@ const SettingSchema = v.looseObject({
   type: v.string(),
 });
 
+const NamedBlockSchema = v.looseObject({
+  name: v.string(),
+  type: v.string(),
+  settings: v.optional(v.array(SettingSchema)),
+});
+
+export type NamedBlock = v.InferOutput<typeof NamedBlockSchema>;
+
 export const SectionSchema = v.looseObject({
+  blocks: v.optional(
+    v.array(
+      v.union([
+        NamedBlockSchema,
+        v.looseObject({
+          type: v.union([v.literal('@app'), v.literal('@theme')]),
+        }),
+      ]),
+    ),
+  ),
   settings: v.optional(v.array(SettingSchema)),
 });
 
