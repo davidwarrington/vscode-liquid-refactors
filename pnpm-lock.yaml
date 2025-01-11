@@ -14,6 +14,9 @@ importers:
       silver-fleece:
         specifier: ^1.2.1
         version: 1.2.1
+      valibot:
+        specifier: 1.0.0-beta.11
+        version: 1.0.0-beta.11(typescript@5.7.2)
     devDependencies:
       '@davidwarrington/eslint-config':
         specifier: ^2.2.0
@@ -1494,6 +1497,14 @@ packages:
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
 
+  valibot@1.0.0-beta.11:
+    resolution: {integrity: sha512-Ztl5Iks1Ql7Z6CwkS5oyqguN3G8tmUiNlsHpqbDt6DLMpm+eu+n8Q7f921gI3uHvNZ8xDVkd4cEJP5t+lELOfw==}
+    peerDependencies:
+      typescript: '>=5'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+
   validate-npm-package-license@3.0.4:
     resolution: {integrity: sha512-DpKm2Ui/xN7/HQKCtpZxoRWBhZ9Z0kqtygG8XCgNQ8ZlDnxuQmWhj566j8fN4Cu3/JmbhsDo7fcAJq4s9h27Ew==}
 
@@ -2882,6 +2893,10 @@ snapshots:
   uri-js@4.4.1:
     dependencies:
       punycode: 2.3.1
+
+  valibot@1.0.0-beta.11(typescript@5.7.2):
+    optionalDependencies:
+      typescript: 5.7.2
 
   validate-npm-package-license@3.0.4:
     dependencies:

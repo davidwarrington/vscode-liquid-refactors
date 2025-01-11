@@ -12,14 +12,14 @@ function injectSchemaSetting(
   value: string,
 ) {
   const { data } = schema;
-  const settings = Array.isArray(data.settings) ? data.settings : [];
-  settings.push({
+
+  data.settings ??= [];
+  data.settings.push({
     type: 'text',
     id,
     label: name,
     default: value,
   });
-  data.settings = settings;
 
   return schema.match.replace(schema.content, patch(schema.content, data));
 }
