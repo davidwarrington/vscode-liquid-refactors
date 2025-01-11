@@ -108,7 +108,7 @@ export const extractToLocales: Command = Object.assign(
       const isCancelled = key === undefined;
 
       if (isCancelled) {
-        console.log('Cancelled');
+        console.log('[extract-to-locales] Cancelled');
         return;
       }
 

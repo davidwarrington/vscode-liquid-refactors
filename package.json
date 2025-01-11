@@ -23,12 +23,21 @@
         "command": "vscode-liquid-refactors.extractToLocales",
         "category": "Liquid",
         "title": "Extract to locales"
+      },
+      {
+        "command": "vscode-liquid-refactors.extractToSchemaSetting",
+        "category": "Liquid",
+        "title": "Extract to schema setting"
       }
     ],
     "menus": {
       "commandPalette": [
         {
           "command": "vscode-liquid-refactors.extractToLocales",
+          "when": "editorLangId === 'liquid'"
+        },
+        {
+          "command": "vscode-liquid-refactors.extractToSchemaSetting",
           "when": "editorLangId === 'liquid'"
         }
       ]
