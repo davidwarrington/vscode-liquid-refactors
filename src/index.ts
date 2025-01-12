@@ -1,5 +1,6 @@
 import { commands, languages, type ExtensionContext } from 'vscode';
 import { extractToLocales } from './commands/extract-to-locales';
+import { extractToSchemaSetting } from './commands/extract-to-schema-setting';
 import { LiquidCodeActionProvider } from './providers/liquid-code-action-provider';
 import type { CodeActionProvider, Command } from './types';
 
@@ -28,7 +29,9 @@ export function activate(context: ExtensionContext) {
   const subscribe = registerSubscription(context);
 
   subscribe.codeActionsProvider(new LiquidCodeActionProvider());
+
   subscribe.textEditorCommand(extractToLocales);
+  subscribe.textEditorCommand(extractToSchemaSetting);
 }
 
 export function deactivate() {}

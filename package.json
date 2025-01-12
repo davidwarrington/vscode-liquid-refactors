@@ -23,12 +23,21 @@
         "command": "vscode-liquid-refactors.extractToLocales",
         "category": "Liquid",
         "title": "Extract to locales"
+      },
+      {
+        "command": "vscode-liquid-refactors.extractToSchemaSetting",
+        "category": "Liquid",
+        "title": "Extract to schema setting"
       }
     ],
     "menus": {
       "commandPalette": [
         {
           "command": "vscode-liquid-refactors.extractToLocales",
+          "when": "editorLangId === 'liquid'"
+        },
+        {
+          "command": "vscode-liquid-refactors.extractToSchemaSetting",
           "when": "editorLangId === 'liquid'"
         }
       ]
@@ -44,7 +53,8 @@
   },
   "dependencies": {
     "lodash.snakecase": "^4.1.1",
-    "silver-fleece": "^1.2.1"
+    "silver-fleece": "^1.2.1",
+    "valibot": "1.0.0-beta.11"
   },
   "devDependencies": {
     "@davidwarrington/eslint-config": "^2.2.0",

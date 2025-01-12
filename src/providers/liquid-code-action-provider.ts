@@ -5,6 +5,7 @@ import {
   type ProviderResult,
 } from 'vscode';
 import { extractToLocales } from '../commands/extract-to-locales';
+import { extractToSchemaSetting } from '../commands/extract-to-schema-setting';
 import { CodeActionProvider } from '../types';
 
 export class LiquidCodeActionProvider implements CodeActionProvider {
@@ -23,6 +24,10 @@ export class LiquidCodeActionProvider implements CodeActionProvider {
       {
         command: extractToLocales.meta.name,
         title: 'Extract to locales',
+      },
+      {
+        command: extractToSchemaSetting.meta.name,
+        title: 'Extract to schema setting',
       },
     ];
   }
