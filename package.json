@@ -28,6 +28,11 @@
         "command": "vscode-liquid-refactors.extractToSchemaSetting",
         "category": "Liquid",
         "title": "Extract to schema setting"
+      },
+      {
+        "command": "vscode-liquid-refactors.extractToBlockSetting",
+        "category": "Liquid",
+        "title": "Extract to block setting"
       }
     ],
     "menus": {
@@ -38,6 +43,10 @@
         },
         {
           "command": "vscode-liquid-refactors.extractToSchemaSetting",
+          "when": "editorLangId === 'liquid'"
+        },
+        {
+          "command": "vscode-liquid-refactors.extractToBlockSetting",
           "when": "editorLangId === 'liquid'"
         }
       ]

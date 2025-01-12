@@ -4,6 +4,7 @@ import {
   type Command,
   type ProviderResult,
 } from 'vscode';
+import { extractToBlockSetting } from '../commands/extract-to-block-setting';
 import { extractToLocales } from '../commands/extract-to-locales';
 import { extractToSchemaSetting } from '../commands/extract-to-schema-setting';
 import { CodeActionProvider } from '../types';
@@ -28,6 +29,10 @@ export class LiquidCodeActionProvider implements CodeActionProvider {
       {
         command: extractToSchemaSetting.meta.name,
         title: 'Extract to schema setting',
+      },
+      {
+        command: extractToBlockSetting.meta.name,
+        title: 'Extract to block setting',
       },
     ];
   }
