@@ -1,33 +1,13 @@
 import { window, workspace, type Disposable, type TextEditor } from 'vscode';
-import { Command } from '../../types';
-import { readJsonc, writeJsonc } from '../../utils/file-system';
+import type { Command, Locale } from '../../types';
+import { writeJsonc } from '../../utils/file-system';
 import { getCommandId } from '../../utils/get-command-id';
+import { getDefaultLocaleFile } from '../../utils/locales';
 import {
   extractVariablesFromSelection,
   type LocaleVariableMatch,
 } from './extract-variables-from-selection';
 import { replaceVariablesInSelection } from './replace-variables-in-selection';
-
-interface Locale {
-  [key: string]: Locale | string;
-}
-
-async function getDefaultLocaleFile() {
-  const files = await workspace.findFiles('**/locales/*.default.json');
-  const uri = files.at(0);
-
-  if (!uri) {
-    throw new Error('Cannot find default locale file');
-  }
-
-  const { content, data } = await readJsonc(uri, workspace.fs);
-
-  return {
-    data,
-    string: content,
-    uri,
-  };
-}
 
 function buildTranslateFilter(variables: LocaleVariableMatch[]) {
   if (variables.length === 0) {

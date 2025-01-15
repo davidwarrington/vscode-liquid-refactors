@@ -8,6 +8,7 @@ import { extractToBlockSetting } from '../commands/extract-to-block-setting';
 import { extractToLocales } from '../commands/extract-to-locales';
 import { extractToSchemaSetting } from '../commands/extract-to-schema-setting';
 import { CodeActionProvider } from '../types';
+import { renameLocaleVariable } from '../commands/rename-locale-variable';
 
 export class LiquidCodeActionProvider implements CodeActionProvider {
   get selector() {
@@ -15,11 +16,11 @@ export class LiquidCodeActionProvider implements CodeActionProvider {
   }
 
   provideCodeActions(): ProviderResult<(CodeAction | Command)[]> {
-    const editor = window.activeTextEditor;
+    // const editor = window.activeTextEditor;
 
-    if (!editor || editor.selection.isEmpty) {
-      return [];
-    }
+    // if (!editor || editor.selection.isEmpty) {
+    //   return [];
+    // }
 
     return [
       {
@@ -33,6 +34,10 @@ export class LiquidCodeActionProvider implements CodeActionProvider {
       {
         command: extractToBlockSetting.meta.name,
         title: 'Extract to block setting',
+      },
+      {
+        command: renameLocaleVariable.meta.name,
+        title: 'Rename locale variable',
       },
     ];
   }
