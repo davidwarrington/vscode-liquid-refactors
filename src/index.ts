@@ -18,7 +18,7 @@ function registerSubscription(context: ExtensionContext) {
     },
     textEditorCommand(command: Command) {
       const disposable = commands.registerTextEditorCommand(
-        command.meta.name,
+        command.meta.id,
         command,
       );
 

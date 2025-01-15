@@ -120,7 +120,7 @@ function modifyLocaleVariable(
   };
 }
 
-export const renameLocaleVariable = Object.assign(
+export const renameLocaleVariable: Command = Object.assign(
   async function renameLocaleVariable(
     editor: TextEditor,
   ): Promise<Disposable | void> {
@@ -185,8 +185,9 @@ export const renameLocaleVariable = Object.assign(
   },
   {
     meta: {
-      name: getCommandId('renameLocaleVariable'),
-      isAvailable(editor: TextEditor | undefined) {
+      title: 'Rename locale variable',
+      id: getCommandId('renameLocaleVariable'),
+      isAvailable(editor: TextEditor) {
         if (!editor) {
           return false;
         }
@@ -197,4 +198,4 @@ export const renameLocaleVariable = Object.assign(
       },
     },
   },
-) satisfies Command;
+);
