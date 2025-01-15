@@ -82,7 +82,15 @@ export const extractToSchemaSetting: Command = Object.assign(
   },
   {
     meta: {
-      name: getCommandId('extractToSchemaSetting'),
+      title: 'Extract to schema setting',
+      id: getCommandId('extractToSchemaSetting'),
+      isAvailable(editor: TextEditor) {
+        if (!editor) {
+          return false;
+        }
+
+        return !editor.selection.isEmpty;
+      },
     },
   },
 );

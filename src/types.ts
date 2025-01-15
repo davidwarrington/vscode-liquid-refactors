@@ -10,8 +10,9 @@ type TextEditorCommand = Parameters<
 
 export interface Command extends TextEditorCommand {
   meta: {
-    name: string;
-    isAvailable?: (editor: vscode.TextEditor | undefined) => boolean;
+    id: string;
+    isAvailable: (editor: vscode.TextEditor) => boolean;
+    title: string;
   };
 }
 

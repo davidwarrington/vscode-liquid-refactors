@@ -137,7 +137,15 @@ export const extractToBlockSetting: Command = Object.assign(
   },
   {
     meta: {
-      name: getCommandId('extractToBlockSetting'),
+      title: 'Extract to block setting',
+      id: getCommandId('extractToBlockSetting'),
+      isAvailable(editor: TextEditor) {
+        if (!editor) {
+          return false;
+        }
+
+        return !editor.selection.isEmpty;
+      },
     },
   },
 );
