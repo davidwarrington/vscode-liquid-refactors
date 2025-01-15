@@ -85,11 +85,9 @@ export const extractToSchemaSetting: Command = Object.assign(
       title: 'Extract to schema setting',
       id: getCommandId('extractToSchemaSetting'),
       isAvailable(editor: TextEditor) {
-        if (!editor) {
-          return false;
-        }
+        const schema = getSchema(editor.document.getText());
 
-        return !editor.selection.isEmpty;
+        return Boolean(schema) && !editor.selection.isEmpty;
       },
     },
   },

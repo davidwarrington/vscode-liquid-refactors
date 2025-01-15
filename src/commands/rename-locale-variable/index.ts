@@ -188,10 +188,6 @@ export const renameLocaleVariable: Command = Object.assign(
       title: 'Rename locale variable',
       id: getCommandId('renameLocaleVariable'),
       isAvailable(editor: TextEditor) {
-        if (!editor) {
-          return false;
-        }
-
         const tag = getCurrentTranslateTag(editor);
 
         return Boolean(tag);

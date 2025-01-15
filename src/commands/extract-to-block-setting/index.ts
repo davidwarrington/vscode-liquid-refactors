@@ -140,11 +140,15 @@ export const extractToBlockSetting: Command = Object.assign(
       title: 'Extract to block setting',
       id: getCommandId('extractToBlockSetting'),
       isAvailable(editor: TextEditor) {
-        if (!editor) {
+        const schema = getSchema(editor.document.getText());
+
+        if (!schema) {
           return false;
         }
 
-        return !editor.selection.isEmpty;
+        const blocks = getValidBlocks(schema.data);
+
+        return blocks.length > 0 && !editor.selection.isEmpty;
       },
     },
   },

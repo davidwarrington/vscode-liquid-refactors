@@ -116,10 +116,6 @@ export const extractToLocales: Command = Object.assign(
       title: 'Extract to locales',
       id: getCommandId('extractToLocales'),
       isAvailable(editor: TextEditor) {
-        if (!editor) {
-          return false;
-        }
-
         return !editor.selection.isEmpty;
       },
     },
