@@ -33,6 +33,11 @@
         "command": "vscode-liquid-refactors.extractToBlockSetting",
         "category": "Liquid",
         "title": "Extract to block setting"
+      },
+      {
+        "command": "vscode-liquid-refactors.renameLocaleVariable",
+        "category": "Liquid",
+        "title": "Rename locale variable"
       }
     ],
     "menus": {
@@ -48,6 +53,10 @@
         {
           "command": "vscode-liquid-refactors.extractToBlockSetting",
           "when": "editorLangId === 'liquid'"
+        },
+        {
+          "command": "vscode-liquid-refactors.renameLocaleVariable",
+          "when": "editorLangId === 'liquid'"
         }
       ]
     }
@@ -61,6 +70,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@shopify/liquid-html-parser": "^2.2.0",
     "lodash.snakecase": "^4.1.1",
     "silver-fleece": "^1.2.1",
     "valibot": "1.0.0-beta.11"
