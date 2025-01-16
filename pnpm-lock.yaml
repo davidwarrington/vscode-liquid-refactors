@@ -7,19 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      '@shopify/liquid-html-parser':
-        specifier: ^2.2.0
-        version: 2.2.0
-      lodash.snakecase:
-        specifier: ^4.1.1
-        version: 4.1.1
-      silver-fleece:
-        specifier: ^1.2.1
-        version: 1.2.1
-      valibot:
-        specifier: 1.0.0-beta.12
-        version: 1.0.0-beta.12(typescript@5.7.3)
     devDependencies:
       '@davidwarrington/eslint-config':
         specifier: ^2.2.0
@@ -27,6 +14,9 @@ importers:
       '@davidwarrington/prettier-config':
         specifier: ^2.1.5
         version: 2.1.5(prettier@3.4.2)
+      '@shopify/liquid-html-parser':
+        specifier: ^2.2.0
+        version: 2.2.0
       '@types/lodash.snakecase':
         specifier: ^4.1.9
         version: 4.1.9
@@ -39,15 +29,24 @@ importers:
       eslint:
         specifier: ^9.18.0
         version: 9.18.0
+      lodash.snakecase:
+        specifier: ^4.1.1
+        version: 4.1.1
       prettier:
         specifier: ^3.4.2
         version: 3.4.2
+      silver-fleece:
+        specifier: ^1.2.1
+        version: 1.2.1
       tsup:
         specifier: ^8.3.5
         version: 8.3.5(postcss@8.5.1)(typescript@5.7.3)
       typescript:
         specifier: ^5.7.3
         version: 5.7.3
+      valibot:
+        specifier: 1.0.0-beta.12
+        version: 1.0.0-beta.12(typescript@5.7.3)
       vitest:
         specifier: ^3.0.1
         version: 3.0.1(@types/node@22.10.7)
