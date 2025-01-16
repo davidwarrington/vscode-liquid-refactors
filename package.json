@@ -2,11 +2,32 @@
   "name": "vscode-liquid-refactors",
   "displayName": "Liquid Refactors",
   "version": "0.0.0",
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "description": "Refactors for a smoother Shopify theme building experience.",
+  "publisher": "davidwarrington",
+  "author": {
+    "name": "David Warrington",
+    "url": "https://github.com/davidwarrington"
+  },
+  "homepage": "https://github.com/davidwarrington/vscode-liquid-refactors#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/davidwarrington/vscode-liquid-refactors"
+  },
+  "bugs": {
+    "url": "https://github.com/davidwarrington/vscode-liquid-refactors/issues"
+  },
+  "license": "MIT",
+  "keywords": [
+    "liquid",
+    "shopify",
+    "refactors"
+  ],
   "categories": [
     "Other"
+  ],
+  "files": [
+    "LICENSE.md",
+    "dist"
   ],
   "private": true,
   "main": "./dist/index.cjs",
@@ -66,8 +87,11 @@
     "dev": "tsup --watch",
     "format": "prettier --write .",
     "lint": "eslint .",
+    "package": "vsce package --no-dependencies",
+    "publish": "vsce publish",
     "test": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "vscode:prepublish": "pnpm build"
   },
   "devDependencies": {
     "@davidwarrington/eslint-config": "^2.2.0",
@@ -76,6 +100,7 @@
     "@types/lodash.snakecase": "^4.1.9",
     "@types/node": "^22.10.7",
     "@types/vscode": "^1.96.0",
+    "@vscode/vsce": "^3.2.1",
     "eslint": "^9.18.0",
     "lodash.snakecase": "^4.1.1",
     "prettier": "^3.4.2",
