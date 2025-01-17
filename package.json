@@ -111,7 +111,7 @@
     "vitest": "^3.0.1"
   },
   "vsce": {
-    "dependencies": false,
-    "message": "chore: update version to %s"
+    "commitMessage": "chore: update version to %s",
+    "dependencies": false
   }
 }
