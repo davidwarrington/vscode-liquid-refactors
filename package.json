@@ -33,7 +33,7 @@
   "main": "./dist/index.cjs",
   "type": "module",
   "engines": {
-    "vscode": "^1.96.0"
+    "vscode": "^1.93.0"
   },
   "activationEvents": [
     "onStartupFinished"
@@ -99,7 +99,7 @@
     "@shopify/liquid-html-parser": "^2.2.0",
     "@types/lodash.snakecase": "^4.1.9",
     "@types/node": "^22.10.7",
-    "@types/vscode": "^1.96.0",
+    "@types/vscode": "^1.93.0",
     "@vscode/vsce": "^3.2.1",
     "eslint": "^9.18.0",
     "lodash.snakecase": "^4.1.1",
