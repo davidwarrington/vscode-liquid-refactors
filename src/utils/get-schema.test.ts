@@ -16,4 +16,21 @@ describe(getSchema, () => {
 
     expect(getSchema(input)).toStrictEqual(output);
   });
+
+  it('Supports non-standard, but parseable schemas', () => {
+    const input =
+      'Foo bar {% schema %}{ "name": "Foo", "settings": [true, 123] }{% endschema %}';
+    const output = {
+      match:
+        '{% schema %}{ "name": "Foo", "settings": [true, 123] }{% endschema %}',
+      content: '{ "name": "Foo", "settings": [true, 123] }',
+      data: { name: 'Foo', settings: [true, 123] },
+      position: {
+        start: 8,
+        end: 77,
+      },
+    };
+
+    expect(getSchema(input)).toStrictEqual(output);
+  });
 });

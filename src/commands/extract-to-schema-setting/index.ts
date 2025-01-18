@@ -3,7 +3,11 @@ import { patch } from 'silver-fleece';
 import { Range, window, type TextEditor } from 'vscode';
 import { Command } from '../../types';
 import { getCommandId } from '../../utils/get-command-id';
-import { getSchema, type MatchedSchema } from '../../utils/get-schema';
+import {
+  getSchema,
+  SchemaError,
+  type MatchedSchema,
+} from '../../utils/get-schema';
 
 function injectSchemaSetting(
   schema: MatchedSchema,
@@ -35,10 +39,6 @@ export const extractToSchemaSetting: Command = Object.assign(
 
       const highlightedText = editor.document.getText(editor.selection);
       const schema = getSchema(editor.document.getText());
-
-      if (!schema || !schema.position) {
-        throw new Error('Cannot find schema.');
-      }
 
       const settingName = await window.showInputBox({
         placeHolder: 'Setting name',
@@ -85,9 +85,17 @@ export const extractToSchemaSetting: Command = Object.assign(
       title: 'Extract to schema setting',
       id: getCommandId('extractToSchemaSetting'),
       isAvailable(editor: TextEditor) {
-        const schema = getSchema(editor.document.getText());
+        try {
+          getSchema(editor.document.getText());
 
-        return Boolean(schema) && !editor.selection.isEmpty;
+          return !editor.selection.isEmpty;
+        } catch (error) {
+          if (error instanceof SchemaError) {
+            return false;
+          }
+
+          throw error;
+        }
       },
     },
   },
