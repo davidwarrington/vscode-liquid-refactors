@@ -1,45 +1,47 @@
+/**
+ * @note Validation schemas in this module are intentionally loose and permissive.
+ * We only need to check that we can inject the relevant data, not that they're
+ * actually valid for Shopify
+ */
+
 import { evaluate } from 'silver-fleece';
 import * as v from 'valibot';
-
-const SettingSchema = v.looseObject({
-  id: v.string(),
-  label: v.string(),
-  type: v.string(),
-});
 
 const NamedBlockSchema = v.looseObject({
   name: v.string(),
   type: v.string(),
-  settings: v.optional(v.array(SettingSchema)),
+  settings: v.optional(v.array(v.unknown())),
 });
 
-export type NamedBlock = v.InferOutput<typeof NamedBlockSchema>;
-
-export const SectionSchema = v.looseObject({
-  blocks: v.optional(
-    v.array(
-      v.union([
-        NamedBlockSchema,
-        v.looseObject({
-          type: v.union([v.literal('@app'), v.literal('@theme')]),
-        }),
-      ]),
-    ),
-  ),
-  settings: v.optional(v.array(SettingSchema)),
+export const SchemaSchema = v.looseObject({
+  blocks: v.optional(v.array(v.unknown())),
+  settings: v.optional(v.array(v.unknown())),
 });
+
+type NamedBlock = v.InferOutput<typeof NamedBlockSchema>;
+type Schema = v.InferOutput<typeof SchemaSchema>;
+
+export function isNamedBlock(
+  block: NonNullable<Schema['blocks']>[number],
+): block is NamedBlock {
+  return v.safeParse(NamedBlockSchema, block).success;
+}
+
+export function getNamedBlocks(schema: Schema) {
+  return (schema.blocks ?? []).filter(isNamedBlock);
+}
 
 export interface MatchedSchema {
   match: string;
   content: string;
-  data: v.InferOutput<typeof SectionSchema>;
-  position:
-    | {
-        start: number;
-        end: number;
-      }
-    | undefined;
+  data: v.InferOutput<typeof SchemaSchema>;
+  position: {
+    start: number;
+    end: number;
+  };
 }
+
+export class SchemaError extends Error {}
 
 export function getSchema(string: string) {
   const matchResult = string.match(
@@ -47,14 +49,14 @@ export function getSchema(string: string) {
   );
 
   if (!matchResult || !matchResult.index) {
-    return;
+    throw new SchemaError('Cannot find schema');
   }
 
   const [match, content] = matchResult;
-  const parseResult = v.safeParse(SectionSchema, evaluate(content));
+  const parseResult = v.safeParse(SchemaSchema, evaluate(content));
 
   if (!parseResult.success) {
-    return;
+    throw new SchemaError('Could not parse schema');
   }
 
   const matchedSchema: MatchedSchema = {
