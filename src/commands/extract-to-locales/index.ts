@@ -1,6 +1,5 @@
 import { window, workspace, type Disposable, type TextEditor } from 'vscode';
 import type { Command } from '../../types';
-import { writeJsonc } from '../../utils/file-system';
 import { getCommandId } from '../../utils/get-command-id';
 import { getDefaultLocaleFile } from '../../utils/locales';
 import {
@@ -19,11 +18,7 @@ export const extractToLocales: Command = Object.assign(
         throw new Error('Cannot refactor empty string.');
       }
 
-      const {
-        data,
-        string: localeString,
-        uri: localeFile,
-      } = await getDefaultLocaleFile();
+      const locale = await getDefaultLocaleFile(workspace.fs);
       const highlightedText = editor.document.getText(editor.selection);
 
       const key = await window.showInputBox({
@@ -47,11 +42,15 @@ export const extractToLocales: Command = Object.assign(
         highlightedText,
         variables,
       );
-      const newLocales = injectLocale(data, key.split('.'), translationValue);
+      const newLocales = injectLocale(
+        locale.data,
+        key.split('.'),
+        translationValue,
+      );
 
       await editor.edit(async edit => {
         edit.replace(editor.selection, translate(key, variables));
-        await writeJsonc(localeFile, localeString, newLocales, workspace.fs);
+        await locale.update(newLocales);
       });
     } catch (error) {
       if (error instanceof Error) {
