@@ -2,6 +2,7 @@ import { commands, languages, type ExtensionContext } from 'vscode';
 import { extractToBlockSetting } from './commands/extract-to-block-setting';
 import { extractToLocales } from './commands/extract-to-locales';
 import { extractToSectionLocales } from './commands/extract-to-section-locales';
+import { extractToSchemaLocales } from './commands/extract-to-schema-locales';
 import { extractToSchemaSetting } from './commands/extract-to-schema-setting';
 import { renameLocaleVariable } from './commands/rename-locale-variable';
 import { LiquidCodeActionProvider } from './providers/liquid-code-action-provider';
@@ -35,6 +36,7 @@ export function activate(context: ExtensionContext) {
 
   subscribe.textEditorCommand(extractToLocales);
   subscribe.textEditorCommand(extractToSectionLocales);
+  subscribe.textEditorCommand(extractToSchemaLocales);
   subscribe.textEditorCommand(extractToSchemaSetting);
   subscribe.textEditorCommand(extractToBlockSetting);
   subscribe.textEditorCommand(renameLocaleVariable);
