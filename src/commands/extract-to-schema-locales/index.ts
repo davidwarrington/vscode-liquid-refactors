@@ -1,22 +1,9 @@
-import {
-  Range,
-  window,
-  workspace,
-  type Disposable,
-  type TextEditor,
-} from 'vscode';
+import { window, workspace, type Disposable, type TextEditor } from 'vscode';
 import type { Command, Locale } from '../../types';
 import { getCommandId } from '../../utils/get-command-id';
 import { getDefaultSchemaLocaleFile } from '../../utils/locales';
 import { getSchema } from '../../utils/get-schema';
-
-function rangeBuilder(editor: TextEditor) {
-  const { document } = editor;
-
-  return function rangeAt(start: number, end: number) {
-    return new Range(document.positionAt(start), document.positionAt(end));
-  };
-}
+import { rangeBuilder } from '../../utils/range-builder';
 
 function injectLocale(key: string, value: string, base: Locale): Locale {
   const [firstKey, ...remainingKeys] = key.split('.');
