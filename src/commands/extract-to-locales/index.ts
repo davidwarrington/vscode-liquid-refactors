@@ -5,17 +5,10 @@ import { getCommandId } from '../../utils/get-command-id';
 import { getDefaultLocaleFile } from '../../utils/locales';
 import {
   extractVariablesFromSelection,
+  replaceVariablesInSelection,
+  translate,
   type LocaleVariableMatch,
-} from './extract-variables-from-selection';
-import { replaceVariablesInSelection } from './replace-variables-in-selection';
-
-function buildTranslateFilter(variables: LocaleVariableMatch[]) {
-  if (variables.length === 0) {
-    return 't';
-  }
-
-  return `t: ${variables.map(({ variableName, variableValue }) => `${variableName}: ${variableValue}`).join(', ')}`;
-}
+} from '../../utils/translate';
 
 function injectLocale(
   key: string,
@@ -51,17 +44,6 @@ function injectLocale(
   base[key] = replaceVariablesInSelection(value, variables);
 
   return base;
-}
-
-function wrap(prefix: string, suffix = prefix) {
-  return function (string: string) {
-    return `${prefix}${string}${suffix}`;
-  };
-}
-
-function translate(key: string, variables: LocaleVariableMatch[]) {
-  const quote = key.includes(`'`) ? `"` : `'`;
-  return `{{ ${wrap(quote)(key)} | ${buildTranslateFilter(variables)} }}`;
 }
 
 export const extractToLocales: Command = Object.assign(

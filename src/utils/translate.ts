@@ -1,5 +1,24 @@
 import snakeCase from 'lodash.snakecase';
 
+function buildTranslateFilter(variables: LocaleVariableMatch[]) {
+  if (variables.length === 0) {
+    return 't';
+  }
+
+  return `t: ${variables.map(({ variableName, variableValue }) => `${variableName}: ${variableValue}`).join(', ')}`;
+}
+
+function wrap(prefix: string, suffix = prefix) {
+  return function (string: string) {
+    return `${prefix}${string}${suffix}`;
+  };
+}
+
+export function translate(key: string, variables: LocaleVariableMatch[]) {
+  const quote = key.includes(`'`) ? `"` : `'`;
+  return `{{ ${wrap(quote)(key)} | ${buildTranslateFilter(variables)} }}`;
+}
+
 function normaliseValue(value: string) {
   return value
     .split('\n')
@@ -93,4 +112,20 @@ export function extractVariablesFromSelection(
   });
 
   return deduplicatedVariables;
+}
+
+export function replaceVariablesInSelection(
+  selection: string,
+  variables: LocaleVariableMatch[],
+) {
+  const reversedVariables = variables.toReversed();
+
+  return reversedVariables.reduce((modifiedSelection, variable) => {
+    const lastIndex = variable.index;
+
+    const start = modifiedSelection.slice(0, lastIndex);
+    const end = modifiedSelection.slice(variable.match.length + lastIndex);
+
+    return `${start}${variable.replacement}${end}`;
+  }, selection);
 }
