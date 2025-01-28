@@ -1,20 +1,24 @@
-import { window, workspace, type Disposable, type TextEditor } from 'vscode';
+import {
+  Range,
+  window,
+  workspace,
+  type Disposable,
+  type TextEditor,
+} from 'vscode';
 import type { Command, Locale } from '../../types';
 import { getCommandId } from '../../utils/get-command-id';
-import { getDefaultLocaleFile } from '../../utils/locales';
-import {
-  extractVariablesFromSelection,
-  replaceVariablesInSelection,
-  translate,
-  type LocaleVariableMatch,
-} from '../../utils/translate';
+import { getDefaultSchemaLocaleFile } from '../../utils/locales';
+import { getSchema } from '../../utils/get-schema';
 
-function injectLocale(
-  key: string,
-  value: string,
-  base: Locale,
-  variables: LocaleVariableMatch[],
-): Locale {
+function rangeBuilder(editor: TextEditor) {
+  const { document } = editor;
+
+  return function rangeAt(start: number, end: number) {
+    return new Range(document.positionAt(start), document.positionAt(end));
+  };
+}
+
+function injectLocale(key: string, value: string, base: Locale): Locale {
   const [firstKey, ...remainingKeys] = key.split('.');
 
   if (firstKey in base && remainingKeys.length === 0) {
@@ -31,22 +35,17 @@ function injectLocale(
   if (remainingKeys.length > 0) {
     return {
       ...base,
-      [firstKey]: injectLocale(
-        remainingKeys.join('.'),
-        value,
-        nextObject,
-        variables,
-      ),
+      [firstKey]: injectLocale(remainingKeys.join('.'), value, nextObject),
     };
   }
 
-  base[key] = replaceVariablesInSelection(value, variables);
+  base[key] = value;
 
   return base;
 }
 
-export const extractToLocales: Command = Object.assign(
-  async function extractToLocales(
+export const extractToSchemaLocales: Command = Object.assign(
+  async function extractToSchemaLocales(
     editor: TextEditor,
   ): Promise<Disposable | void> {
     try {
@@ -54,7 +53,7 @@ export const extractToLocales: Command = Object.assign(
         throw new Error('Cannot refactor empty string.');
       }
 
-      const locale = await getDefaultLocaleFile(workspace.fs);
+      const locales = await getDefaultSchemaLocaleFile(workspace.fs);
       const highlightedText = editor.document.getText(editor.selection);
 
       const key = await window.showInputBox({
@@ -73,17 +72,11 @@ export const extractToLocales: Command = Object.assign(
         throw new Error('Key must not be blank');
       }
 
-      const variables = extractVariablesFromSelection(highlightedText);
-      const newLocales = injectLocale(
-        key,
-        highlightedText,
-        locale.data,
-        variables,
-      );
+      const newLocales = injectLocale(key, highlightedText, locales.data);
 
       await editor.edit(async edit => {
-        edit.replace(editor.selection, translate(key, variables));
-        await locale.update(newLocales);
+        edit.replace(editor.selection, key.startsWith('t:') ? key : `t:${key}`);
+        await locales.update(newLocales);
       });
     } catch (error) {
       if (error instanceof Error) {
@@ -95,10 +88,15 @@ export const extractToLocales: Command = Object.assign(
   },
   {
     meta: {
-      title: 'Extract to locales',
-      id: getCommandId('extractToLocales'),
+      title: 'Extract to schema locales',
+      id: getCommandId('extractToSchemaLocales'),
       isAvailable(editor: TextEditor) {
-        return !editor.selection.isEmpty;
+        const rangeAt = rangeBuilder(editor);
+        const schema = getSchema(editor.document.getText(editor.selection));
+        const range = rangeAt(schema.position.start, schema.position.end);
+
+        /** @todo check if cursor is at valid json property */
+        return range.contains(editor.selection);
       },
     },
   },
