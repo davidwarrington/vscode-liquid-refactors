@@ -6,6 +6,7 @@
 
 import { evaluate } from 'silver-fleece';
 import * as v from 'valibot';
+import type { Locale } from '../types';
 
 const NamedBlockSchema = v.looseObject({
   name: v.string(),
@@ -13,9 +14,27 @@ const NamedBlockSchema = v.looseObject({
   settings: v.optional(v.array(v.unknown())),
 });
 
+const LocaleSchema: v.GenericSchema<Locale> = v.record(
+  v.string(),
+  v.lazy(() => v.union([v.string(), LocaleSchema])),
+);
+
+const LocalesSchema = v.record(v.string(), v.record(v.string(), LocaleSchema));
+
+export function getLocales(schema: Schema) {
+  const result = v.safeParse(LocalesSchema, schema.locales);
+
+  if (!result.success) {
+    return;
+  }
+
+  return result.output;
+}
+
 export const SchemaSchema = v.looseObject({
   blocks: v.optional(v.array(v.unknown())),
   settings: v.optional(v.array(v.unknown())),
+  locales: v.optional(v.unknown()),
 });
 
 type NamedBlock = v.InferOutput<typeof NamedBlockSchema>;

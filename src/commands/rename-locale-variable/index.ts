@@ -11,14 +11,7 @@ import type { Command, Locale } from '../../types';
 import { writeJsonc } from '../../utils/file-system';
 import { getCommandId } from '../../utils/get-command-id';
 import { getDefaultLocaleFile } from '../../utils/locales';
-
-function rangeBuilder(editor: TextEditor) {
-  const { document } = editor;
-
-  return function rangeAt(start: number, end: number) {
-    return new Range(document.positionAt(start), document.positionAt(end));
-  };
-}
+import { rangeBuilder } from '../../utils/range-builder';
 
 function getCurrentTranslateTag(editor: TextEditor) {
   const { document } = editor;

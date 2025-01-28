@@ -46,6 +46,11 @@
         "title": "Extract to locales"
       },
       {
+        "command": "vscode-liquid-refactors.extractToSectionLocales",
+        "category": "Liquid",
+        "title": "Extract to section locales"
+      },
+      {
         "command": "vscode-liquid-refactors.extractToSchemaSetting",
         "category": "Liquid",
         "title": "Extract to schema setting"
@@ -65,6 +70,10 @@
       "commandPalette": [
         {
           "command": "vscode-liquid-refactors.extractToLocales",
+          "when": "editorLangId === 'liquid'"
+        },
+        {
+          "command": "vscode-liquid-refactors.extractToSectionLocales",
           "when": "editorLangId === 'liquid'"
         },
         {
