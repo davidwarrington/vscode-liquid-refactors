@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { getSchema } from './get-schema';
+import { getCurrentSchemaNode, getSchema } from './get-schema';
+import { Selection } from 'vscode';
 
 describe(getSchema, () => {
   it('Can detect a schema block', () => {
@@ -32,5 +33,27 @@ describe(getSchema, () => {
     };
 
     expect(getSchema(input)).toStrictEqual(output);
+  });
+});
+
+describe(getCurrentSchemaNode, () => {
+  it('works', () => {
+    const schema = getSchema(`
+Hello world
+
+{% schema %}
+{
+  "name": "Foo",
+  "settings": [
+    {
+      "label": "Bar"
+    }
+  ]
+}
+{% endschema %}
+`);
+    const result = getCurrentSchemaNode(schema, [70, 73]);
+
+    expect(result).toBe(false);
   });
 });
