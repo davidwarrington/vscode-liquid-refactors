@@ -1,7 +1,7 @@
 {
   "name": "vscode-liquid-refactors",
   "displayName": "Liquid Refactors",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Refactors for a smoother Shopify theme building experience.",
   "publisher": "davidwarrington",
   "author": {
