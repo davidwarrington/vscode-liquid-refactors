@@ -1,46 +1,10 @@
 import { patch } from 'silver-fleece';
-import type { Locale } from '../../types';
 import { getLocales, type MatchedSchema } from '../../utils/get-schema';
 import {
   replaceVariablesInSelection,
   type LocaleVariableMatch,
 } from '../../utils/translate';
-
-function injectLocale(
-  key: string,
-  value: string,
-  base: Locale,
-  variables: LocaleVariableMatch[],
-): Locale {
-  const [firstKey, ...remainingKeys] = key.split('.');
-
-  if (firstKey in base && remainingKeys.length === 0) {
-    throw new Error('Key already exists');
-  }
-
-  const nextObject = base[firstKey] ?? {};
-
-  if (typeof nextObject !== 'object') {
-    // eslint-disable-next-line unicorn/prefer-type-error
-    throw new Error('Key already exists');
-  }
-
-  if (remainingKeys.length > 0) {
-    return {
-      ...base,
-      [firstKey]: injectLocale(
-        remainingKeys.join('.'),
-        value,
-        nextObject,
-        variables,
-      ),
-    };
-  }
-
-  base[key] = replaceVariablesInSelection(value, variables);
-
-  return base;
-}
+import { injectLocale } from '../../utils/inject-locale';
 
 export function injectSectionLocale(
   schema: MatchedSchema,
@@ -60,13 +24,14 @@ export function injectSectionLocale(
     throw new Error('[extract-to-section-locales] invalid section locales');
   }
 
+  const translationValue = replaceVariablesInSelection(value, variables);
+
   for (const locale in locales) {
     locales[locale] = injectLocale(
-      key,
-      value,
       locales[locale] ?? {},
-      variables,
-    ) as Record<string, Locale>;
+      key.split('.'),
+      translationValue,
+    );
   }
 
   data.locales = locales;
