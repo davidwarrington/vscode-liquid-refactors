@@ -4,9 +4,20 @@
  * actually valid for Shopify
  */
 
-import { evaluate } from 'silver-fleece';
+import { evaluate, parse } from 'silver-fleece';
+import type {
+  ArrayExpression,
+  Comment,
+  Literal,
+  Node,
+  ObjectExpression,
+  Property,
+  Value,
+} from 'silver-fleece/dist/interfaces';
 import * as v from 'valibot';
 import type { Locale } from '../types';
+
+type Identifier = Literal<string>;
 
 const NamedBlockSchema = v.looseObject({
   name: v.string(),
@@ -89,4 +100,109 @@ export function getSchema(string: string) {
   };
 
   return matchedSchema;
+}
+
+class JsonCWalkError extends Error {
+  node: Node;
+
+  constructor(node: Node, message: string) {
+    super(message);
+
+    this.node = node;
+  }
+}
+
+type Visitor<T extends Node> = (node: T, ancestors: Node[]) => void;
+
+function walkJsonc(
+  string: string,
+  visitors: {
+    onArray?: Visitor<ArrayExpression>;
+    onComment?: Visitor<Comment>;
+    onIdentifier?: Visitor<Identifier>;
+    onLiteral?: Visitor<Literal>;
+    onObject?: Visitor<ObjectExpression>;
+    onProperty?: Visitor<Property>;
+  } = {},
+) {
+  const nodes: Node[] = [];
+
+  function ancestorNodes(node: Node) {
+    return nodes.filter(({ end, start }) => isWithinNode(node, [start, end]));
+  }
+
+  parse(string, {
+    onComment(node) {
+      nodes.unshift(node);
+
+      const ancestors = ancestorNodes(node);
+
+      visitors.onComment?.(node, ancestors);
+    },
+    onValue(node) {
+      nodes.unshift(node);
+
+      const ancestors = ancestorNodes(node);
+
+      switch (node.type) {
+        case 'ArrayExpression': {
+          visitors.onArray?.(node, ancestors);
+          break;
+        }
+        case 'Literal': {
+          visitors.onLiteral?.(node, ancestors);
+          break;
+        }
+        case 'ObjectExpression': {
+          visitors.onObject?.(node, ancestors);
+
+          node.properties.forEach(property => {
+            visitors.onProperty?.(property, ancestors);
+            visitors.onIdentifier?.(property.key, ancestors);
+          });
+          break;
+        }
+        default: {
+          throw new JsonCWalkError(node, 'Unhandled node type');
+        }
+      }
+    },
+  });
+}
+
+export function getCurrentSchemaNode(
+  schema: MatchedSchema,
+  [start, end]: [number, number],
+) {
+  const openingSchemaTag =
+    schema.match.match(/{%-?\s*schema\s*-?%}/)?.[0] ?? '';
+  const offset = openingSchemaTag.length;
+  const range = [start - offset, end - offset] satisfies [number, number];
+
+  let currentNode: Value | undefined;
+  const nodes: Node[] = [];
+
+  parse(schema.content, {
+    onValue(value) {
+      nodes.unshift(value);
+
+      if (isWithinNode(value, range)) {
+        currentNode = value;
+      }
+    },
+  });
+
+  if (!currentNode) {
+    return;
+  }
+
+  return [currentNode, ...ancestorNodes(currentNode)];
+
+  function ancestorNodes(node: Node) {
+    return nodes.filter(({ end, start }) => isWithinNode(node, [start, end]));
+  }
+}
+
+function isWithinNode(node: Node, [start, end]: [number, number]) {
+  return node.start <= start && node.end >= end;
 }
