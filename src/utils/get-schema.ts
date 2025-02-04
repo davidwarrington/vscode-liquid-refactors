@@ -19,7 +19,7 @@ const LocaleSchema: v.GenericSchema<Locale> = v.record(
   v.lazy(() => v.union([v.string(), LocaleSchema])),
 );
 
-const LocalesSchema = v.record(v.string(), v.record(v.string(), LocaleSchema));
+const LocalesSchema = v.record(v.string(), LocaleSchema);
 
 export function getLocales(schema: Schema) {
   const result = v.safeParse(LocalesSchema, schema.locales);
