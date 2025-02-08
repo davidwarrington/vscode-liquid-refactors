@@ -1,5 +1,5 @@
 import { window, workspace, type Disposable, type TextEditor } from 'vscode';
-import type { Command, Locale } from '../../types';
+import type { Command } from '../../types';
 import { writeJsonc } from '../../utils/file-system';
 import { getCommandId } from '../../utils/get-command-id';
 import { getDefaultLocaleFile } from '../../utils/locales';
@@ -7,44 +7,8 @@ import {
   extractVariablesFromSelection,
   replaceVariablesInSelection,
   translate,
-  type LocaleVariableMatch,
 } from '../../utils/translate';
-
-function injectLocale(
-  key: string,
-  value: string,
-  base: Locale,
-  variables: LocaleVariableMatch[],
-): Locale {
-  const [firstKey, ...remainingKeys] = key.split('.');
-
-  if (firstKey in base && remainingKeys.length === 0) {
-    throw new Error('Key already exists');
-  }
-
-  const nextObject = base[firstKey] ?? {};
-
-  if (typeof nextObject !== 'object') {
-    // eslint-disable-next-line unicorn/prefer-type-error
-    throw new Error('Key already exists');
-  }
-
-  if (remainingKeys.length > 0) {
-    return {
-      ...base,
-      [firstKey]: injectLocale(
-        remainingKeys.join('.'),
-        value,
-        nextObject,
-        variables,
-      ),
-    };
-  }
-
-  base[key] = replaceVariablesInSelection(value, variables);
-
-  return base;
-}
+import { injectLocale } from '../../utils/inject-locale';
 
 export const extractToLocales: Command = Object.assign(
   async function extractToLocales(
@@ -79,7 +43,11 @@ export const extractToLocales: Command = Object.assign(
       }
 
       const variables = extractVariablesFromSelection(highlightedText);
-      const newLocales = injectLocale(key, highlightedText, data, variables);
+      const translationValue = replaceVariablesInSelection(
+        highlightedText,
+        variables,
+      );
+      const newLocales = injectLocale(data, key.split('.'), translationValue);
 
       await editor.edit(async edit => {
         edit.replace(editor.selection, translate(key, variables));
