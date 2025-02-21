@@ -1,35 +1,10 @@
 import { window, workspace, type Disposable, type TextEditor } from 'vscode';
-import type { Command, Locale } from '../../types';
+import type { Command } from '../../types';
 import { getCommandId } from '../../utils/get-command-id';
 import { getDefaultSchemaLocaleFile } from '../../utils/locales';
 import { getSchema } from '../../utils/get-schema';
+import { injectLocale } from '../../utils/inject-locale';
 import { rangeBuilder } from '../../utils/range-builder';
-
-function injectLocale(key: string, value: string, base: Locale): Locale {
-  const [firstKey, ...remainingKeys] = key.split('.');
-
-  if (firstKey in base && remainingKeys.length === 0) {
-    throw new Error('Key already exists');
-  }
-
-  const nextObject = base[firstKey] ?? {};
-
-  if (typeof nextObject !== 'object') {
-    // eslint-disable-next-line unicorn/prefer-type-error
-    throw new Error('Key already exists');
-  }
-
-  if (remainingKeys.length > 0) {
-    return {
-      ...base,
-      [firstKey]: injectLocale(remainingKeys.join('.'), value, nextObject),
-    };
-  }
-
-  base[key] = value;
-
-  return base;
-}
 
 export const extractToSchemaLocales: Command = Object.assign(
   async function extractToSchemaLocales(
@@ -51,7 +26,7 @@ export const extractToSchemaLocales: Command = Object.assign(
       const isCancelled = key === undefined;
 
       if (isCancelled) {
-        console.log('[extract-to-locales] Cancelled');
+        console.log('[extract-to-schema-locales] Cancelled');
         return;
       }
 
@@ -59,7 +34,11 @@ export const extractToSchemaLocales: Command = Object.assign(
         throw new Error('Key must not be blank');
       }
 
-      const newLocales = injectLocale(key, highlightedText, locales.data);
+      const newLocales = injectLocale(
+        locales.data,
+        key.split('.'),
+        highlightedText,
+      );
 
       await editor.edit(async edit => {
         edit.replace(editor.selection, key.startsWith('t:') ? key : `t:${key}`);
