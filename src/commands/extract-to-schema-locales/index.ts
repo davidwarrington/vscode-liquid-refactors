@@ -58,7 +58,7 @@ export const extractToSchemaLocales: Command = Object.assign(
       id: getCommandId('extractToSchemaLocales'),
       isAvailable(editor: TextEditor) {
         const rangeAt = rangeBuilder(editor);
-        const schema = getSchema(editor.document.getText(editor.selection));
+        const schema = getSchema(editor.document.getText());
         const range = rangeAt(schema.position.start, schema.position.end);
 
         /** @todo check if cursor is at valid json property */
