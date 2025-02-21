@@ -1,16 +1,13 @@
 import { window, workspace, type Disposable, type TextEditor } from 'vscode';
 import type { Command } from '../../types';
 import { getCommandId } from '../../utils/get-command-id';
-import { getDefaultLocaleFile } from '../../utils/locales';
-import {
-  extractVariablesFromSelection,
-  replaceVariablesInSelection,
-  translate,
-} from '../../utils/translate';
+import { getDefaultSchemaLocaleFile } from '../../utils/locales';
+import { getSchema } from '../../utils/get-schema';
 import { injectLocale } from '../../utils/inject-locale';
+import { rangeBuilder } from '../../utils/range-builder';
 
-export const extractToLocales: Command = Object.assign(
-  async function extractToLocales(
+export const extractToSchemaLocales: Command = Object.assign(
+  async function extractToSchemaLocales(
     editor: TextEditor,
   ): Promise<Disposable | void> {
     try {
@@ -18,7 +15,7 @@ export const extractToLocales: Command = Object.assign(
         throw new Error('Cannot refactor empty string.');
       }
 
-      const locale = await getDefaultLocaleFile(workspace.fs);
+      const locales = await getDefaultSchemaLocaleFile(workspace.fs);
       const highlightedText = editor.document.getText(editor.selection);
 
       const key = await window.showInputBox({
@@ -29,7 +26,7 @@ export const extractToLocales: Command = Object.assign(
       const isCancelled = key === undefined;
 
       if (isCancelled) {
-        console.log('[extract-to-locales] Cancelled');
+        console.log('[extract-to-schema-locales] Cancelled');
         return;
       }
 
@@ -37,20 +34,15 @@ export const extractToLocales: Command = Object.assign(
         throw new Error('Key must not be blank');
       }
 
-      const variables = extractVariablesFromSelection(highlightedText);
-      const translationValue = replaceVariablesInSelection(
-        highlightedText,
-        variables,
-      );
       const newLocales = injectLocale(
-        locale.data,
+        locales.data,
         key.split('.'),
-        translationValue,
+        highlightedText,
       );
 
       await editor.edit(async edit => {
-        edit.replace(editor.selection, translate(key, variables));
-        await locale.update(newLocales);
+        edit.replace(editor.selection, key.startsWith('t:') ? key : `t:${key}`);
+        await locales.update(newLocales);
       });
     } catch (error) {
       if (error instanceof Error) {
@@ -62,10 +54,15 @@ export const extractToLocales: Command = Object.assign(
   },
   {
     meta: {
-      title: 'Extract to locales',
-      id: getCommandId('extractToLocales'),
+      title: 'Extract to schema locales',
+      id: getCommandId('extractToSchemaLocales'),
       isAvailable(editor: TextEditor) {
-        return !editor.selection.isEmpty;
+        const rangeAt = rangeBuilder(editor);
+        const schema = getSchema(editor.document.getText());
+        const range = rangeAt(schema.position.start, schema.position.end);
+
+        /** @todo check if cursor is at valid json property */
+        return range.contains(editor.selection);
       },
     },
   },

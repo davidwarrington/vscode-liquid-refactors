@@ -9,11 +9,11 @@ export async function writeFile(file: Uri, content: string, fs: FileSystem) {
 
 export async function writeJsonc(
   file: Uri,
-  base: string,
-  content: unknown,
+  originalContent: string,
+  data: unknown,
   fs: FileSystem,
 ) {
-  return writeFile(file, patch(base, content), fs);
+  return writeFile(file, patch(originalContent, data), fs);
 }
 
 export async function readFile(file: Uri, fs: FileSystem) {
